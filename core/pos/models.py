@@ -346,6 +346,10 @@ class Sale(models.Model):
 
     def calculate_invoice(self):
         redondeo = Company.objects.first().redondeoiva                  # AEMM
+        precioconiva = False
+        if self.type_voucher == VOUCHER[0][0]:                          # Boleta                       
+            precioconiva = True
+
         subtotal = 0.00
         for i in self.saledetail_set.filter():
             i.subtotal = float(i.price) * int(i.cant)
@@ -356,8 +360,14 @@ class Sale(models.Model):
             i.save()
             subtotal += i.total
         self.subtotal = round(subtotal,redondeo)                        # AEMM
-        self.total_iva = self.subtotal * float(self.iva)
-        self.total_iva = round(self.total_iva,redondeo)                 # AEMM
+
+        if precioconiva:
+            self.total_iva = 0
+            self.total_iva = 0                                          # AEMM
+        else:
+            self.total_iva = self.subtotal * float(self.iva)
+            self.total_iva = round(self.total_iva,redondeo)             # AEMM
+
         self.total_dscto = self.subtotal * float(self.dscto)
         self.total_dscto = round(self.total_dscto,redondeo)             # AEMM
         self.total = float(self.subtotal) - float(self.total_dscto) + float(self.total_iva)

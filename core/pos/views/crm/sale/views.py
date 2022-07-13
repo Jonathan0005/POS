@@ -82,7 +82,12 @@ class SaleCreateView(PermissionMixin, CreateView):
                     sale.payment_method = request.POST['payment_method']
                     sale.payment_condition = request.POST['payment_condition']
                     sale.type_voucher = request.POST['type_voucher']
-                    sale.iva = float(Company.objects.first().iva / 100)
+
+                    if self.type_voucher == VOUCHER[0][0]:                          # Boleta             
+                        sale.iva = 0
+                    else:
+                        sale.iva = float(Company.objects.first().iva / 100)
+
                     sale.dscto = float(request.POST['dscto']) / 100
                     sale.save()
                     for i in json.loads(request.POST['products']):
@@ -105,6 +110,11 @@ class SaleCreateView(PermissionMixin, CreateView):
                         saledetail.product.stock -= saledetail.cant
                         saledetail.product.save()
                     sale.calculate_invoice()
+
+                    # print(sale.payment_condition)
+                    # print(PAYMENT_CONDITION[0][0])
+
+
                     if sale.payment_condition == PAYMENT_CONDITION[1][0]:
                         sale.end_credit = request.POST['end_credit']
                         sale.cash = 0.00
@@ -118,11 +128,11 @@ class SaleCreateView(PermissionMixin, CreateView):
                         ctascollect.saldo = sale.total
                         ctascollect.save()
                     elif sale.payment_condition == PAYMENT_CONDITION[0][0]:
-                        if sale.payment_method == PAYMENT_CONDITION[0][0]:
+                        if sale.payment_method == PAYMENT_METHOD[0][0]:
                             sale.cash = float(request.POST['cash'])
                             sale.change = float(sale.cash) - sale.total
                             sale.save()
-                        elif sale.payment_method == PAYMENT_CONDITION[1][0]:
+                        elif sale.payment_method == PAYMENT_METHOD[1][0]:
                             sale.card_number = request.POST['card_number']
                             sale.titular = request.POST['titular']
                             sale.amount_debited = float(request.POST['amount_debited'])
@@ -254,11 +264,16 @@ class SalePrintInvoiceView(LoginRequiredMixin, View):
         try:
             sale = Sale.objects.get(pk=self.kwargs['pk'])
             context = {'sale': sale, 'company': Company.objects.first()}
-            if sale.type_voucher == VOUCHER[0][0]:
+            # if sale.type_voucher == VOUCHER[0][0]:
+            #     template = get_template('crm/sale/print/ticket.html')
+            #     context['height'] = self.get_height_ticket()
+            # else:
+            #     template = get_template('crm/sale/print/invoice.html')
+            if sale.type_voucher == VOUCHER[2][0]:
+                template = get_template('crm/sale/print/invoice.html')
+            else:
                 template = get_template('crm/sale/print/ticket.html')
                 context['height'] = self.get_height_ticket()
-            else:
-                template = get_template('crm/sale/print/invoice.html')
             html_template = template.render(context).encode(encoding="UTF-8")
             url_css = os.path.join(settings.BASE_DIR, 'static/lib/bootstrap-4.6.0/css/bootstrap.min.css')
             pdf_file = HTML(string=html_template, base_url=request.build_absolute_uri()).write_pdf(stylesheets=[CSS(url_css)], presentational_hints=True)

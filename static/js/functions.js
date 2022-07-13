@@ -300,6 +300,59 @@ function validate_decimals(el, evt) {
     return true;
 }
 
+function validate_dni_chile(dni) {
+
+    if (dni.length > 10) {
+        return false;
+    }
+
+    // dni = dni.replace(/\./g, '')
+    // dni = dni.replace(/\-/g, '')
+
+    var suma = 0;
+    var modulo = 11;
+    var multiplo = 2;
+
+    var dv = dni.charAt(dni.length - 1)
+    var dvcalc = 0;
+
+    var ok = 1;
+    var largonum = dni.length - 2;
+    
+    for (i = largonum; i > -1 && ok == 1; i--) {
+
+        if (multiplo > 7) multiplo = 2;
+
+        var n = parseInt(dni.charAt(i));
+
+        if (isNaN(n)) ok = 0;
+
+        if (ok == 1) {
+            suma = suma + (n * multiplo);
+        }
+
+        multiplo = multiplo + 1;
+    }
+
+    if (ok == 0) {
+        return false;
+    }
+
+    dvcalc = modulo - (suma % modulo);
+    dvstring = String(dvcalc);
+
+    if (dvstring == '10') dvstring = 'K';
+    else if (dvstring == '11') dvstring = '0';
+
+    if (dv != dvstring) {
+        // alert('Digito Verificador Inválido');
+        return false;
+    }
+
+    return true;
+
+}
+
 function validate_dni_ruc(dni) {
     if (dni === '9999999999999') {
         return true;

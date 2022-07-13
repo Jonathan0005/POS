@@ -80,6 +80,11 @@ class PurchaseCreateView(PermissionMixin, CreateView):
                         purchasedetail.product.stock += purchasedetail.cant
                         purchasedetail.product.save()
 
+                        # AEMM - Grabo precio ingresado en Maestro de Productos
+                        product.price = float(i['price'])
+                        product.save()
+
+
                     purchase.calculate_invoice()
 
                     if purchase.payment_condition == PAYMENT_CONDITION[1][0]:

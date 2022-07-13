@@ -21,8 +21,6 @@ var sale = {
         this.details.products.forEach(function (value, index, array) {
             value.cant = parseInt(value.cant);
             value.subtotal = value.cant * parseFloat(value.price_current);
-            //value.subtotal = val(value.subtotal).toFixed(0);
-            //value.total_dscto = (parseFloat(value.dscto) / 100) * value.subtotal;
             value.total_dscto = parseInt(value.dscto / 100 * value.subtotal);
             value.total = value.subtotal - value.total_dscto;
             total += value.total;
@@ -31,8 +29,21 @@ var sale = {
         sale.details.subtotal = total;
         sale.details.dscto = parseFloat($('input[name="dscto"]').val());
         sale.details.total_dscto = sale.details.subtotal * (sale.details.dscto / 100);
-        sale.details.total_iva = sale.details.subtotal * (sale.details.iva / 100);
-        sale.details.total = sale.details.subtotal + sale.details.total_iva - sale.details.total_dscto;
+
+        type_voucher = String($('input[name="type_voucher"]'));
+
+        // alert(type_voucher);
+
+        if (type_voucher == 'boleta') {
+            sale.details.total_iva = 0;
+            sale.details.iva = 0;
+        }
+        else {
+            sale.details.total_iva = (sale.details.subtotal - sale.details.total_dscto) * (sale.details.iva / 100);
+        }
+
+        sale.details.total = (sale.details.subtotal - sale.details.total_dscto) + sale.details.total_iva;
+        // sale.details.total = sale.details.subtotal + sale.details.total_iva - sale.details.total_dscto;
         //sale.details.total = parseFloat(sale.details.total.toFixed(2));
 
         $('input[name="subtotal"]').val(sale.details.subtotal.toFixed(0));
@@ -192,9 +203,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     validators: {
                         notEmpty: {},
                         stringLength: {
-                            min: 10
+                            max: 10
                         },
-                        digits: {},
+                        // digits: {},
+                        callback: {
+                            message: 'Ingrese un rut válido!!',
+                            callback: function (input) {
+                                return validate_dni_chile(input.value);
+                            },
+                        },
                         remote: {
                             url: pathname,
                             data: function () {

@@ -10,6 +10,7 @@ PAYMENT_METHOD = (
 )
 
 VOUCHER = (
+    ('boleta', 'Boleta'),
     ('ticket', 'Ticket'),
     ('factura', 'Factura'),
 )

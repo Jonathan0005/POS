@@ -103,3 +103,6 @@ def insert_sale():
 # insert_products()
 # insert_purchase()
 # insert_sale()
+
+
+

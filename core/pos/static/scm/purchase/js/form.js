@@ -45,14 +45,15 @@ var purchase = {
                     }
                 },
                 {
-                    targets: [-1],
+                    targets: [-2],
                     class: 'text-center',
                     render: function (data, type, row) {
-                        return '$' + parseFloat(data).toFixed(2);
+                        // return '$' + parseFloat(data).toFixed(2);
+                        return '<input type="text" class="form-control" autocomplete="off" name="price" value="' + row.price + '">';
                     }
                 },
                 {
-                    targets: [-2],
+                    targets: [-1],
                     class: 'text-center',
                     render: function (data, type, row) {
                         return '$' + parseFloat(data).toFixed(2);
@@ -66,6 +67,7 @@ var purchase = {
                     }
                 },
             ],
+
             rowCallback: function (row, data, index) {
                 var tr = $(row).closest('tr');
                 tr.find('input[name="cant"]')
@@ -76,6 +78,11 @@ var purchase = {
                     })
                     .on('keypress', function (e) {
                         return validate_form_text('numbers', e, null);
+                    });
+
+                tr.find('input[name="price"]')
+                    .on('keypress', function (e) {
+                        return validate_decimals($(this), e);
                     });
             },
             initComplete: function (settings, json) {
@@ -260,9 +267,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     validators: {
                         notEmpty: {},
                         stringLength: {
-                            min: 13
+                            max: 10
                         },
-                        digits: {},
+                        // digits: {},
+                        callback: {
+                            message: 'Ingrese un rut válido!!',
+                            callback: function (input) {
+                                return validate_dni_chile(input.value);
+                            },
+                        },
                         remote: {
                             url: pathname,
                             data: function () {
@@ -272,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                                     action: 'validate_provider'
                                 };
                             },
-                            message: 'El número de ruc ya se encuentra registrado',
+                            message: 'El número de rut ya se encuentra registrado',
                             method: 'POST',
                             headers: {
                                 'X-CSRFToken': csrftoken

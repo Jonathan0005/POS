@@ -28,9 +28,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     validators: {
                         notEmpty: {},
                         stringLength: {
-                            min: 13,
+                            max: 10,
                         },
-                        digits: {},
+                        callback: {
+                            message: 'Ingrese un rut válido!!',
+                            callback: function (input) {
+                                return validate_dni_chile(input.value);
+                            },
+                        },
                     }
                 },
                 mobile: {
@@ -146,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             submit_formdata_with_ajax_form(fv);
         });
 });
+
 
 $(function () {
 

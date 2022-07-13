@@ -41,9 +41,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
                     validators: {
                         notEmpty: {},
                         stringLength: {
-                            min: 13
+                            max: 10
                         },
-                        digits: {},
+                        // digits: {},
+                        callback: {
+                            message: 'Ingrese un rut válido!!',
+                            callback: function (input) {
+                                return validate_dni_chile(input.value);
+                            },
+                        },
                         remote: {
                             url: pathname,
                             data: function () {

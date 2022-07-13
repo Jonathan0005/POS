@@ -1,3 +1,4 @@
+from cProfile import label
 from django.forms import ModelForm
 from django import forms
 
@@ -14,11 +15,16 @@ class ProviderForm(ModelForm):
         fields = '__all__'
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Ingrese un nombre'}),
-            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un número de ruc'}),
+            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un rut, sin puntos ni guión'}),
             'mobile': forms.TextInput(attrs={'placeholder': 'Ingrese un teléfono celular'}),
             'address': forms.TextInput(attrs={'placeholder': 'Ingrese una dirección'}),
             'email': forms.TextInput(attrs={'placeholder': 'Ingrese un email'}),
         }
+
+    ruc = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Ingrese un rut, sin puntos ni guión',
+        'autocomplete': 'off'
+    }), max_length=10, label='Rut')
 
     def save(self, commit=True):
         data = {}
@@ -219,10 +225,15 @@ class ClientForm(ModelForm):
         fields = 'names', 'dni', 'email', 'mobile', 'birthdate', 'address', 'image'
         widgets = {
             'names': forms.TextInput(attrs={'placeholder': 'Ingrese sus nombres'}),
-            'dni': forms.TextInput(attrs={'placeholder': 'Ingrese su número de cédula'}),
+            'dni': forms.TextInput(attrs={'placeholder': 'Ingrese Rut, sin puntos ni guión'}),
             'email': forms.TextInput(attrs={'placeholder': 'Ingrese su correo electrónico'}),
         }
         exclude = ['username', 'groups', 'password', 'date_joined', 'last_login', 'is_superuser', 'email_reset_token', 'is_active', 'is_staff', 'is_change_password', 'user_permissions']
+
+    dni = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Ingrese un rut, sin puntos ni guión',
+        'autocomplete': 'off'
+    }), max_length=10, label='Rut')
 
     birthdate = forms.DateField(input_formats=['%Y-%m-%d'], widget=forms.TextInput(
         attrs={
@@ -374,15 +385,15 @@ class CompanyForm(ModelForm):
         fields = '__all__'
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Ingrese un nombre'}),
-            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un rut'}),
+            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un rut, sin puntos ni guión'}),
             'mobile': forms.TextInput(attrs={'placeholder': 'Ingrese un teléfono celular'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Ingrese un teléfono convencional'}),
             'email': forms.TextInput(attrs={'placeholder': 'Ingrese un email'}),
             'address': forms.TextInput(attrs={'placeholder': 'Ingrese una dirección'}),
             'website': forms.TextInput(attrs={'placeholder': 'Ingrese una dirección web'}),
             'description': forms.Textarea(attrs={'placeholder': 'Ingrese una descripción', 'rows': 3, 'cols': 3}),
-            'iva': forms.TextInput(),
-            'redondeoiva': forms.TextInput(),
+            'iva': forms.TextInput(attrs={'placeholder': 'Ingrese un valor de IVA'}),
+            'redondeoiva': forms.TextInput(attrs={'placeholder': 'Ingrese un valor de redondeo IVA'}),
         }
 
     def save(self, commit=True):
